@@ -1,4 +1,4 @@
-import DashboardShell from "../components/Dashboard";
+import DashboardShell from '../components/dashboard';
 
 const Home = () => {
   return (

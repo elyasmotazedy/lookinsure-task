@@ -1,29 +1,19 @@
-"use client";
-import { FC, ReactNode } from "react";
-import Topbar from "./Topbar";
-import Sidebar from "./Sidebar";
-import Box from "@mui/material/Box";
-import { useAppSelector } from "@/store/hooks";
+'use client';
+import Box from '@mui/material/Box';
+import { useState } from 'react';
+import Content from './content';
+import Topbar from './Topbar';
+import Sidebar from './Sidebar';
 
-interface Props {
-  children: ReactNode;
-}
-const DashboarLayout: FC<Props> = ({ children }) => {
-  const open = useAppSelector((state) => state.ui.sidebarOpen);
-  const drawerWidth = 240;
+const DashboarLayout = () => {
+  const [selectedTab, setSelectedTab] = useState(0);
 
   return (
-    <div className="app-root">
+    <Box>
       <Topbar />
-      <Sidebar />
-      <Box
-        component="main"
-        className="content"
-        sx={{ marginTop: "64px", marginLeft: open ? `${drawerWidth}px` : 0 }}
-      >
-        {children}
-      </Box>
-    </div>
+      <Sidebar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />
+      <Content selectedTab={selectedTab} />
+    </Box>
   );
 };
 
