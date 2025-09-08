@@ -1,0 +1,43 @@
+"use client";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/Inbox";
+import MailIcon from "@mui/icons-material/Mail";
+import { useAppSelector } from "@/store/hooks";
+
+const Sidebar = () => {
+  const open = useAppSelector((state) => state.ui.sidebarOpen);
+  const drawerWidth = 240;
+
+  return (
+    <Drawer
+      variant="persistent"
+      anchor="left"
+      open={open}
+      sx={{ "& .MuiDrawer-paper": { width: drawerWidth } }}
+    >
+      <div>
+        <List>
+          {["Dashboard", "Orders", "Products", "Customers"].map(
+            (text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
+            )
+          )}
+        </List>
+      </div>
+    </Drawer>
+  );
+};
+
+export default Sidebar;
