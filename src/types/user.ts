@@ -1,3 +1,5 @@
+import { CountryCodeKey } from '@/lib/statics/country_code';
+
 export interface User {
   gender: string;
   name: Name;
@@ -10,7 +12,7 @@ export interface User {
   cell: string;
   id: Id;
   picture: Picture;
-  nat: string;
+  nat: CountryCodeKey;
 }
 
 export interface Name {
