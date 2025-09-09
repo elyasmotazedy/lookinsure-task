@@ -16,8 +16,9 @@ import {
 import LocationPinIcon from '@mui/icons-material/LocationPin';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { COUNTRY_CODE } from '@/lib/statics/country_code';
+import { COUNTRIES } from '@/lib/statics/country_code';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
+import styles from '@/styles/dashboard/users.module.scss';
 
 interface Props {
   userDetails: User | null;
@@ -33,21 +34,26 @@ const DetailsModal: FC<Props> = ({ userDetails, setOpen, open }) => {
   console.log(userDetails);
   if (!userDetails) return null;
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <Dialog onClose={handleClose} open={open} className={styles.detailsModal}>
       <DialogTitle>{t('user_details', { defaultValue: 'User Details' })}</DialogTitle>
       <DialogContent>
         <Avatar
           alt={userDetails.name.first + userDetails.name.last}
           src={userDetails.picture.medium}
-          sx={{ width: 100, height: 100, mb: 2 }}
+          className={styles.avatar}
         />
-        <Typography variant="h6" component="div" sx={{ mt: 1, textWrap: 'nowrap' }}>
+        <Typography variant="body2" component="div" className={styles.fullname}>
           {userDetails.name.first} {userDetails.name.last}{' '}
-          <Typography component="span" variant="subtitle2">
-            ({userDetails.nat} {COUNTRY_CODE[userDetails.nat].emoji})
+          <Typography component="span" variant="overline">
+            ({COUNTRIES[userDetails.nat].name} {COUNTRIES[userDetails.nat].emoji})
           </Typography>
         </Typography>
-        <Typography variant="body2" fontSize={10} sx={{ color: 'text.secondary' }}>
+        <Typography
+          variant="body2"
+          component={'p'}
+          sx={{ color: 'text.secondary' }}
+          className={styles.email}
+        >
           {userDetails.email}
         </Typography>
         <List>

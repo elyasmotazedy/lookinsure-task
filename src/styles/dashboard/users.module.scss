@@ -1,6 +1,4 @@
 .userCard {
-  max-width: 250;
-
   .cardMedia {
     height: 130;
     filter: blur(1.6px);
@@ -17,4 +15,25 @@
       border: 3px solid white;
     }
   }
+}
+
+.detailsModal {
+  .avatar {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 0 auto;
+  }
+  .fullname {
+    margin-top: 2;
+    text-align: center;
+  }
+  .email {
+    text-align: center;
+    font-size: 12px;
+  }
+}
+.pagination {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
 }

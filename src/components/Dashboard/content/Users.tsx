@@ -1,6 +1,11 @@
 import { AppDispatch } from '@/store';
 import { useDispatch } from 'react-redux';
-import { fetchUsers, selectFilteredUsers, selectUsersLoading } from '@/store/slices/usersSlice';
+import {
+  fetchUsers,
+  handleDataChange,
+  selectUsersCountBySearchAndCountry,
+  selectUsersLoading,
+} from '@/store/slices/usersSlice';
 import { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -10,8 +15,18 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { COUNTRY_CODE } from '@/lib/statics/country_code';
-import { Avatar, CircularProgress, TextField } from '@mui/material';
+import { COUNTRIES } from '@/lib/statics/country_code';
+import {
+  Avatar,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+  Stack,
+  TextField,
+} from '@mui/material';
 
 import styles from '@/styles/dashboard/users.module.scss';
 import { useTranslation } from 'react-i18next';
@@ -20,15 +35,22 @@ import DetailsModal from './DetailsModal';
 import { useAppSelector } from '@/store/hooks';
 
 const Users = () => {
+  const { t } = useTranslation('common');
+
   const dispatch = useDispatch<AppDispatch>();
   const [search, setSearch] = useState('');
-  const users = useAppSelector(selectFilteredUsers(search));
-  const loading = useAppSelector(selectUsersLoading);
-
+  const [country, setCountry] = useState('all');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [open, setOpen] = useState(false);
 
-  const { t } = useTranslation('common');
+  const users = useAppSelector(handleDataChange(search, country, page, pageSize));
+  const totalUsers = useAppSelector(selectUsersCountBySearchAndCountry(search, country));
+
+  const loading = useAppSelector(selectUsersLoading);
+  const totalPages = Math.ceil(totalUsers / pageSize);
+
   useEffect(() => {
     dispatch(fetchUsers(100));
   }, [dispatch]);
@@ -40,15 +62,59 @@ const Users = () => {
 
   return (
     <Box>
-      <TextField
-        id="search-users"
-        label={t('search', { defaultValue: 'Search' })}
-        variant="outlined"
-        onChange={(e) => setSearch(e.target.value)}
-        fullWidth
-        value={search}
-        sx={{ mb: 2 }}
-      />
+      <Stack flexWrap="nowrap" gap={2} direction="row">
+        <TextField
+          id="search-users"
+          label={t('search', { defaultValue: 'Search' })}
+          variant="outlined"
+          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          sx={{ mb: 2 }}
+        />
+        <FormControl>
+          <InputLabel id="select-country-label">
+            {t('country', { defaultValue: 'country' })}
+          </InputLabel>
+          <Select
+            labelId="select-country-label"
+            id="select-country"
+            value={country}
+            label={t('country', { defaultValue: 'country' })}
+            onChange={(event) => {
+              setCountry(event.target.value);
+              setPage(1);
+            }}
+            sx={{ minWidth: 200 }}
+          >
+            <MenuItem value="all">All</MenuItem>
+            {Object.values(COUNTRIES).map((country) => (
+              <MenuItem key={country.code} value={country.code}>
+                {country.name} {country.emoji}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>{' '}
+        <FormControl>
+          <InputLabel id="per-page-label">{t('per_page', { defaultValue: 'Per page' })}</InputLabel>
+          <Select
+            labelId="per-page-label"
+            id="per-page  "
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setPage(1);
+            }}
+            label={t('per_page', { defaultValue: 'Per page' })}
+            sx={{ minWidth: 100 }}
+          >
+            {[5, 10, 20, 50].map((size) => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
       {loading ? (
         <CircularProgress />
       ) : (
@@ -71,8 +137,8 @@ const Users = () => {
                   </Box>
                   <Typography variant="body2" component="div" sx={{ mt: 2, textWrap: 'nowrap' }}>
                     {user.name.first} {user.name.last}{' '}
-                    <Typography component="span" variant="subtitle2">
-                      ({user.nat} {COUNTRY_CODE[user.nat].emoji})
+                    <Typography component="span" variant="overline" fontSize={10}>
+                      ({COUNTRIES[user.nat].name} {COUNTRIES[user.nat].emoji})
                     </Typography>
                   </Typography>
                   <Typography variant="body2" fontSize={10} sx={{ color: 'text.secondary' }}>
@@ -90,6 +156,13 @@ const Users = () => {
           <DetailsModal userDetails={userDetails} setOpen={setOpen} open={open} />
         </Grid>
       )}
+      <Pagination
+        count={totalPages}
+        page={page}
+        onChange={(_, value) => setPage(value)}
+        color="primary"
+      className={styles.pagination}
+      />
     </Box>
   );
 };

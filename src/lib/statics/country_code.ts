@@ -1,4 +1,4 @@
-export const COUNTRY_CODE = {
+export const COUNTRIES = {
   AD: {
     name: 'Andorra',
     code: 'AD',
@@ -1927,6 +1927,6 @@ export const COUNTRY_CODE = {
     image: 'ZW.svg',
     dial_code: '+263',
   },
-} as const;
+};
 
-export type CountryCodeKey = keyof typeof COUNTRY_CODE;
+export type CountryCodeKey = keyof typeof COUNTRIES;

@@ -56,4 +56,50 @@ export const selectFilteredUsers = (query: string) => (state: RootState) => {
       u.email.toLowerCase().includes(query.toLowerCase())
   );
 };
+
+export const selectUsersByCountry = (country?: string) => (state: RootState) => {
+  const users = state.users.users;
+  if (!country) return users;
+
+  return users.filter((u) => u.location.country.toLowerCase() === country.toLowerCase());
+};
+
+export const handleDataChange =
+  (query: string, country: string, page: number, pageSize: number) => (state: RootState) => {
+    const users = state.users.users;
+
+    const filtered = users.filter((user) => {
+      const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
+      const email = user.email.toLowerCase();
+      const matchesSearch =
+        !query || fullName.includes(query.toLowerCase()) || email.includes(query.toLowerCase());
+
+      const matchesCountry =
+        country === 'all' || user.location.country.toLowerCase() === country.toLowerCase();
+
+      return matchesSearch && matchesCountry;
+    });
+
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return filtered.slice(start, end);
+  };
+
+export const selectUsersCountBySearchAndCountry =
+  (query: string, country: string) => (state: RootState) => {
+    const users = state.users.users;
+
+    return users.filter((user) => {
+      const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
+      const email = user.email.toLowerCase();
+      const matchesSearch =
+        !query || fullName.includes(query.toLowerCase()) || email.includes(query.toLowerCase());
+
+      const matchesCountry =
+        country === 'all' || user.location.country.toLowerCase() === country.toLowerCase();
+
+      return matchesSearch && matchesCountry;
+    }).length;
+  };
+
 export default usersSlice.reducer;
