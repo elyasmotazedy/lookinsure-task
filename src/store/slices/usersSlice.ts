@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../index";
-import { User } from "@/types/user";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../index';
+import { User } from '@/types/user';
 // Async thunk to fetch users
-export const fetchUsers = createAsyncThunk("users/fetchUsers", async (count: number = 100) => {
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async (count: number = 100) => {
   const res = await fetch(`https://randomuser.me/api/?results=${count}`);
   const data = await res.json();
   return data.results; // only results array
@@ -21,13 +21,9 @@ const initialState: UserState = {
 };
 
 const usersSlice = createSlice({
-  name: "users",
+  name: 'users',
   initialState,
-  reducers: {
-    clearUsers: (state) => {
-      state.users = [];
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
@@ -40,11 +36,24 @@ const usersSlice = createSlice({
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Something went wrong";
+        state.error = action.error.message || 'Something went wrong';
       });
   },
 });
 
-export const { clearUsers } = usersSlice.actions;
-export const selectUsers = (state: RootState) => state.users;
+export const selectAllUsers = (state: RootState) => state.users.users;
+export const selectUsersLoading = (state: RootState) => state.users.loading;
+export const selectUsersError = (state: RootState) => state.users.error;
+
+export const selectFilteredUsers = (query: string) => (state: RootState) => {
+  const users = state.users.users;
+  if (!query) return users;
+
+  return users.filter(
+    (u) =>
+      u.name.first.toLowerCase().includes(query.toLowerCase()) ||
+      u.name.last.toLowerCase().includes(query.toLowerCase()) ||
+      u.email.toLowerCase().includes(query.toLowerCase())
+  );
+};
 export default usersSlice.reducer;
