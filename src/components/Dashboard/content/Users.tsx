@@ -18,7 +18,6 @@ import Grid from '@mui/material/Grid';
 import { COUNTRIES } from '@/lib/statics/country_code';
 import {
   Avatar,
-  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
@@ -33,13 +32,14 @@ import { useTranslation } from 'react-i18next';
 import { User } from '@/types/user';
 import DetailsModal from './DetailsModal';
 import { useAppSelector } from '@/store/hooks';
+import UserLoading from './UserLoading';
 
 const Users = () => {
   const { t } = useTranslation('common');
 
   const dispatch = useDispatch<AppDispatch>();
   const [search, setSearch] = useState('');
-  const [country, setCountry] = useState('all');
+  const [country, setCountry] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [userDetails, setUserDetails] = useState<User | null>(null);
@@ -59,7 +59,6 @@ const Users = () => {
     setUserDetails(user);
     setOpen(true);
   };
-
   return (
     <Box>
       <Stack flexWrap="nowrap" gap={2} direction="row">
@@ -70,6 +69,7 @@ const Users = () => {
           onChange={(e) => setSearch(e.target.value)}
           value={search}
           sx={{ mb: 2 }}
+          disabled={loading}
         />
         <FormControl>
           <InputLabel id="select-country-label">
@@ -85,8 +85,9 @@ const Users = () => {
               setPage(1);
             }}
             sx={{ minWidth: 200 }}
+            disabled={loading}
           >
-            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="">All</MenuItem>
             {Object.values(COUNTRIES).map((country) => (
               <MenuItem key={country.code} value={country.code}>
                 {country.name} {country.emoji}
@@ -106,6 +107,7 @@ const Users = () => {
             }}
             label={t('per_page', { defaultValue: 'Per page' })}
             sx={{ minWidth: 100 }}
+            disabled={loading}
           >
             {[5, 10, 20, 50].map((size) => (
               <MenuItem key={size} value={size}>
@@ -115,8 +117,9 @@ const Users = () => {
           </Select>
         </FormControl>
       </Stack>
+
       {loading ? (
-        <CircularProgress />
+        <UserLoading />
       ) : (
         <Grid container spacing={2}>
           {users.map((user) => (
@@ -161,7 +164,7 @@ const Users = () => {
         page={page}
         onChange={(_, value) => setPage(value)}
         color="primary"
-      className={styles.pagination}
+        className={styles.pagination}
       />
     </Box>
   );

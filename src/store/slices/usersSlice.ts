@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { User } from '@/types/user';
+import { COUNTRIES } from '@/lib/statics/country_code';
 // Async thunk to fetch users
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (count: number = 100) => {
   const res = await fetch(`https://randomuser.me/api/?results=${count}`);
@@ -74,9 +75,7 @@ export const handleDataChange =
       const matchesSearch =
         !query || fullName.includes(query.toLowerCase()) || email.includes(query.toLowerCase());
 
-      const matchesCountry =
-        country === 'all' || user.location.country.toLowerCase() === country.toLowerCase();
-
+      const matchesCountry = !country || user.nat.toLowerCase() === country.toLowerCase();
       return matchesSearch && matchesCountry;
     });
 
@@ -95,11 +94,24 @@ export const selectUsersCountBySearchAndCountry =
       const matchesSearch =
         !query || fullName.includes(query.toLowerCase()) || email.includes(query.toLowerCase());
 
-      const matchesCountry =
-        country === 'all' || user.location.country.toLowerCase() === country.toLowerCase();
-
+      const matchesCountry = !country || user.nat.toLowerCase() === country.toLowerCase();
       return matchesSearch && matchesCountry;
     }).length;
   };
+
+export const selectUsersCountByCountry = (state: RootState) => {
+  const counts: Record<string, number> = {};
+
+  state.users.users.forEach((user) => {
+    const code = user.nat;
+    counts[code] = (counts[code] || 0) + 1;
+  });
+
+  return Object.entries(counts).map(([code, count]) => ({
+    id: code,
+    label: `${COUNTRIES[code]?.emoji || ''} ${COUNTRIES[code]?.name || code}`,
+    value: count,
+  }));
+};
 
 export default usersSlice.reducer;

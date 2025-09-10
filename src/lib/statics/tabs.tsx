@@ -1,8 +1,12 @@
+import Statistics from '@/components/dashboard/content/Statistics';
 import Users from '@/components/dashboard/content/Users';
 
 export const TABS_ITEMS = [
-  { label: 'users', path: '/', Component: () => <Users />, default: 'Users' },
-  // { label: 'users', path: '/orders', Component: () => <Box>Orders</Box> },
-  // { label: 'users', path: '/products', Component: () => <Box>Products</Box> },
-  // { label: 'users', path: '/customers', Component: () => <Users /> },
+  { label: 'users', slug: '#users', Component: () => <Users />, default: 'Users' },
+  {
+    label: 'statistics',
+    slug: '#statistics',
+    Component: () => <Statistics />,
+    default: 'Statistics',
+  },
 ];
