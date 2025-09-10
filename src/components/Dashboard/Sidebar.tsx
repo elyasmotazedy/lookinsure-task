@@ -1,41 +1,45 @@
-"use client";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/Inbox";
-import MailIcon from "@mui/icons-material/Mail";
-import { useAppSelector } from "@/store/hooks";
+'use client';
+import Drawer from '@mui/material/Drawer';
 
-const Sidebar = () => {
+import { useAppSelector } from '@/store/hooks';
+import Tabs from '@mui/material/Tabs';
+import { FC } from 'react';
+import { a11yProps } from '@/lib/helper/a11yProps';
+import Tab from '@mui/material/Tab';
+import { TABS_ITEMS } from '@/lib/statics/tabs';
+import { useTranslation } from 'react-i18next';
+
+interface Props {
+  selectedTab: number;
+  setSelectedTab: (index: number) => void;
+}
+const Sidebar: FC<Props> = ({ selectedTab, setSelectedTab }) => {
   const open = useAppSelector((state) => state.ui.sidebarOpen);
   const drawerWidth = 240;
-
+  const { t, ready } = useTranslation('sidebar');
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue);
+  };
+  if (!ready) return null;
   return (
     <Drawer
       variant="persistent"
       anchor="left"
       open={open}
-      sx={{ "& .MuiDrawer-paper": { width: drawerWidth } }}
+      sx={{ '& .MuiDrawer-paper': { width: drawerWidth } }}
     >
-      <div>
-        <List>
-          {["Dashboard", "Orders", "Products", "Customers"].map(
-            (text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            )
-          )}
-        </List>
-      </div>
+      <Tabs
+        orientation="vertical"
+        variant="scrollable"
+        value={selectedTab}
+        onChange={handleChange}
+        aria-label="dashboard tabs"
+        sx={{ borderRight: 1, borderColor: 'divider', mt: 10 }}
+      >
+        {TABS_ITEMS.map((item, index) => (
+          <Tab key={index} label={t(item.label,{ defaultValue: item.default })} {...a11yProps(index)} />
+        ))}
+      </Tabs>
     </Drawer>
   );
 };

@@ -1,10 +1,6 @@
-import DashboardShell from "../components/Dashboard";
+import DashboarLayout from '../components/dashboard';
 
 const Home = () => {
-  return (
-    <DashboardShell>
-      asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasd
-    </DashboardShell>
-  );
+  return <DashboarLayout />;
 };
 export default Home;
