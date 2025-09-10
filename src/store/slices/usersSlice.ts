@@ -2,11 +2,10 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { User } from '@/types/user';
 import { COUNTRIES } from '@/lib/statics/country_code';
-// Async thunk to fetch users
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (count: number = 100) => {
   const res = await fetch(`https://randomuser.me/api/?results=${count}`);
   const data = await res.json();
-  return data.results; // only results array
+  return data.results;
 });
 
 interface UserState {
@@ -75,7 +74,8 @@ export const handleDataChange =
       const matchesSearch =
         !query || fullName.includes(query.toLowerCase()) || email.includes(query.toLowerCase());
 
-      const matchesCountry = !country || user.nat.toLowerCase() === country.toLowerCase();
+      const matchesCountry =
+        !country || country === 'all' || user.nat.toLowerCase() === country.toLowerCase();
       return matchesSearch && matchesCountry;
     });
 
@@ -94,7 +94,8 @@ export const selectUsersCountBySearchAndCountry =
       const matchesSearch =
         !query || fullName.includes(query.toLowerCase()) || email.includes(query.toLowerCase());
 
-      const matchesCountry = !country || user.nat.toLowerCase() === country.toLowerCase();
+      const matchesCountry =
+        !country || country === 'all' || user.nat.toLowerCase() === country.toLowerCase();
       return matchesSearch && matchesCountry;
     }).length;
   };
@@ -107,11 +108,15 @@ export const selectUsersCountByCountry = (state: RootState) => {
     counts[code] = (counts[code] || 0) + 1;
   });
 
-  return Object.entries(counts).map(([code, count]) => ({
-    id: code,
-    label: `${COUNTRIES[code]?.emoji || ''} ${COUNTRIES[code]?.name || code}`,
-    value: count,
-  }));
+  return Object.entries(counts).map(([code, count]) => {
+    // Validate if code exists in COUNTRIES
+    const country = COUNTRIES[code as keyof typeof COUNTRIES];
+    return {
+      id: code,
+      label: country ? `${country.emoji} ${country.name}` : code,
+      value: count,
+    };
+  });
 };
 
 export default usersSlice.reducer;

@@ -16,40 +16,31 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { COUNTRIES } from '@/lib/statics/country_code';
-import {
-  Avatar,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Pagination,
-  Select,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Avatar, Container, Pagination, useMediaQuery, useTheme } from '@mui/material';
 
 import styles from '@/styles/dashboard/users.module.scss';
 import { useTranslation } from 'react-i18next';
 import { User } from '@/types/user';
-import DetailsModal from './DetailsModal';
-import { useAppSelector } from '@/store/hooks';
+import DetailsModal from '../DetailsModal';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import UserLoading from './UserLoading';
+import Filters from './Filters';
+import { selectFilters, setPage } from '@/store/slices/filtersSlice';
 
 const Users = () => {
   const { t } = useTranslation('common');
-
-  const dispatch = useDispatch<AppDispatch>();
-  const [search, setSearch] = useState('');
-  const [country, setCountry] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [userDetails, setUserDetails] = useState<User | null>(null);
-  const [open, setOpen] = useState(false);
-
+  const dispatch = useAppDispatch();
+  const { search, country, page, pageSize } = useAppSelector(selectFilters);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const users = useAppSelector(handleDataChange(search, country, page, pageSize));
   const totalUsers = useAppSelector(selectUsersCountBySearchAndCountry(search, country));
-
   const loading = useAppSelector(selectUsersLoading);
+
   const totalPages = Math.ceil(totalUsers / pageSize);
+
+  const [userDetails, setUserDetails] = useState<User | null>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchUsers(100));
@@ -60,64 +51,8 @@ const Users = () => {
     setOpen(true);
   };
   return (
-    <Box>
-      <Stack flexWrap="nowrap" gap={2} direction="row">
-        <TextField
-          id="search-users"
-          label={t('search', { defaultValue: 'Search' })}
-          variant="outlined"
-          onChange={(e) => setSearch(e.target.value)}
-          value={search}
-          sx={{ mb: 2 }}
-          disabled={loading}
-        />
-        <FormControl>
-          <InputLabel id="select-country-label">
-            {t('country', { defaultValue: 'country' })}
-          </InputLabel>
-          <Select
-            labelId="select-country-label"
-            id="select-country"
-            value={country}
-            label={t('country', { defaultValue: 'country' })}
-            onChange={(event) => {
-              setCountry(event.target.value);
-              setPage(1);
-            }}
-            sx={{ minWidth: 200 }}
-            disabled={loading}
-          >
-            <MenuItem value="">All</MenuItem>
-            {Object.values(COUNTRIES).map((country) => (
-              <MenuItem key={country.code} value={country.code}>
-                {country.name} {country.emoji}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>{' '}
-        <FormControl>
-          <InputLabel id="per-page-label">{t('per_page', { defaultValue: 'Per page' })}</InputLabel>
-          <Select
-            labelId="per-page-label"
-            id="per-page  "
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPage(1);
-            }}
-            label={t('per_page', { defaultValue: 'Per page' })}
-            sx={{ minWidth: 100 }}
-            disabled={loading}
-          >
-            {[5, 10, 20, 50].map((size) => (
-              <MenuItem key={size} value={size}>
-                {size}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Stack>
-
+    <Container>
+      <Filters loading={loading} />
       {loading ? (
         <UserLoading />
       ) : (
@@ -125,8 +60,8 @@ const Users = () => {
           {users.map((user) => (
             <Grid
               key={user.login.uuid}
-              size={{ xs: 10, sm: 4, md: 4, lg: 3, xl: 3 }}
-              sx={{ mx: 'auto' }}
+              size={{ xs: 12, sm: 6, md: 4, lg: 3, xl: 3 }}
+              // sx={{ mx: matches ? 'auto' : '' }}
             >
               <Card className={styles.userCard}>
                 <CardMedia
@@ -162,11 +97,11 @@ const Users = () => {
       <Pagination
         count={totalPages}
         page={page}
-        onChange={(_, value) => setPage(value)}
+        onChange={(_, value) => dispatch(setPage(value))}
         color="primary"
         className={styles.pagination}
       />
-    </Box>
+    </Container>
   );
 };
 
