@@ -8,14 +8,17 @@ import { a11yProps } from '@/lib/helper/a11yProps';
 import Tab from '@mui/material/Tab';
 import { TABS_ITEMS } from '@/lib/statics/tabs';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery, useTheme } from '@mui/material';
+import { DRAWER_WIDTH } from '@/lib/statics/config';
 
 interface Props {
   selectedTab: number;
   setSelectedTab: (index: number) => void;
 }
 const Sidebar: FC<Props> = ({ selectedTab, setSelectedTab }) => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const open = useAppSelector((state) => state.ui.sidebarOpen);
-  const drawerWidth = 240;
   const { t, ready } = useTranslation('sidebar');
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -23,10 +26,10 @@ const Sidebar: FC<Props> = ({ selectedTab, setSelectedTab }) => {
   if (!ready) return null;
   return (
     <Drawer
-      variant="persistent"
+      variant={matches ? 'temporary' : 'persistent'}
       anchor="left"
       open={open}
-      sx={{ '& .MuiDrawer-paper': { width: drawerWidth } }}
+      sx={{ '& .MuiDrawer-paper': { width: DRAWER_WIDTH } }}
     >
       <Tabs
         orientation="vertical"
@@ -37,7 +40,11 @@ const Sidebar: FC<Props> = ({ selectedTab, setSelectedTab }) => {
         sx={{ borderRight: 1, borderColor: 'divider', mt: 10 }}
       >
         {TABS_ITEMS.map((item, index) => (
-          <Tab key={index} label={t(item.label,{ defaultValue: item.default })} {...a11yProps(index)} />
+          <Tab
+            key={index}
+            label={t(item.label, { defaultValue: item.default })}
+            {...a11yProps(index)}
+          />
         ))}
       </Tabs>
     </Drawer>
