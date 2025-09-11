@@ -109,12 +109,10 @@ export const selectUsersCountByCountry = (state: RootState) => {
   });
 
   return Object.entries(counts).map(([code, count]) => {
-    // Validate if code exists in COUNTRIES
     const country = COUNTRIES[code as keyof typeof COUNTRIES];
     return {
-      id: code,
-      label: country ? `${country.emoji} ${country.name}` : code,
-      value: count,
+      x: country ? `${country.emoji} ${country.name}` : code,
+      y: count,
     };
   });
 };

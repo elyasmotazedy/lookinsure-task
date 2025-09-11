@@ -1,5 +1,3 @@
-import { AppDispatch } from '@/store';
-import { useDispatch } from 'react-redux';
 import {
   fetchUsers,
   handleDataChange,
@@ -16,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { COUNTRIES } from '@/lib/statics/country_code';
-import { Avatar, Container, Pagination, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, Container, Pagination } from '@mui/material';
 
 import styles from '@/styles/dashboard/users.module.scss';
 import { useTranslation } from 'react-i18next';
@@ -31,8 +29,6 @@ const Users = () => {
   const { t } = useTranslation('common');
   const dispatch = useAppDispatch();
   const { search, country, page, pageSize } = useAppSelector(selectFilters);
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const users = useAppSelector(handleDataChange(search, country, page, pageSize));
   const totalUsers = useAppSelector(selectUsersCountBySearchAndCountry(search, country));
   const loading = useAppSelector(selectUsersLoading);
@@ -58,11 +54,7 @@ const Users = () => {
       ) : (
         <Grid container spacing={2}>
           {users.map((user) => (
-            <Grid
-              key={user.login.uuid}
-              size={{ xs: 12, sm: 6, md: 4, lg: 3, xl: 3 }}
-              // sx={{ mx: matches ? 'auto' : '' }}
-            >
+            <Grid key={user.login.uuid} size={{ xs: 12, sm: 6, md: 4, lg: 3, xl: 3 }}>
               <Card className={styles.userCard}>
                 <CardMedia
                   className={styles.cardMedia}
@@ -94,13 +86,15 @@ const Users = () => {
           <DetailsModal userDetails={userDetails} setOpen={setOpen} open={open} />
         </Grid>
       )}
-      <Pagination
-        count={totalPages}
-        page={page}
-        onChange={(_, value) => dispatch(setPage(value))}
-        color="primary"
-        className={styles.pagination}
-      />
+      {!loading && (
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(_, value) => dispatch(setPage(value))}
+          color="primary"
+          className={styles.pagination}
+        />
+      )}
     </Container>
   );
 };

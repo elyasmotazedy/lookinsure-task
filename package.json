@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "ts:check": "tsc --noEmit -p tsconfig.json --pretty"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -35,6 +36,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/stylis": "^4.2.7",
+    "debug": "4.3.7",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "typescript": "^5"

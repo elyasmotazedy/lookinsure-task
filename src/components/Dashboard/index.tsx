@@ -1,9 +1,11 @@
 'use client';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
-import Content from './content';
-import Topbar from './Topbar';
-import Sidebar from './Sidebar';
+import dynamic from 'next/dynamic';
+
+const Topbar = dynamic(() => import('./Topbar'), { ssr: false });
+const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false });
+const Content = dynamic(() => import('./content'), { ssr: false });
 
 const DashboarLayout = () => {
   const [selectedTab, setSelectedTab] = useState(0);
