@@ -4,5 +4,6 @@
   "close": "Close",
   "search": "Search",
   "country": "Country",
-  "per_page": "Per page"
+  "per_page": "Per page",
+  "users_by_country": "Users by Country"
 }

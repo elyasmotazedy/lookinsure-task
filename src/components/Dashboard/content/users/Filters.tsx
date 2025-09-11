@@ -49,7 +49,7 @@ const Filters: FC<Props> = ({ loading }) => {
       />
       <FormControl>
         <InputLabel id="select-country-label">
-          {t('country', { defaultValue: 'country' })}
+          {t('country', { defaultValue: 'Country' })}
         </InputLabel>
         <Select
           labelId="select-country-label"

@@ -4,5 +4,6 @@
   "close": "يغلق",
   "search": "يبحث",
   "country": "دولة",
-  "per_page": "لكل صفحة"
+  "per_page": "لكل صفحة",
+  "users_by_country":" المستخدمون حسب البلد"
 }
